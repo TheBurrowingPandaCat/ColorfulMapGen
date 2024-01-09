@@ -38,12 +38,12 @@ type node struct {
 var NodeMap [][]*node
 
 func InitalizeNodeMap(width int, height int) {
-	NodeMap = make([][]*node, height)
+	NodeMap = make([][]*node, width)
 
-	for i := 0; i < height; i++ {
-		NodeMap[i] = make([]*node, width)
+	for i := 0; i < width; i++ {
+		NodeMap[i] = make([]*node, height)
 
-		for j := 0; j < width; j++ {
+		for j := 0; j < height; j++ {
 			NodeMap[i][j] = new(node)
 
 			for k := 0; k < 5; k++ {
