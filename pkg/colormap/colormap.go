@@ -1,5 +1,9 @@
 package colormap
 
+import (
+	blocks "github.com/TheBurrowingPandaCat/ColorfulMapGen/pkg/colorblockprint"
+)
+
 // These are the possible states a block can be in
 // This should eventually read from a file, but is hard coded for now
 const (
@@ -34,10 +38,10 @@ type node struct {
 var NodeMap [][]*node
 
 func InitalizeNodeMap(width int, height int) {
-	NodeMap = make([][]*node, width)
+	NodeMap = make([][]*node, height)
 
-	for i := 0; i < width; i++ {
-		NodeMap[i] = make([]*node, height)
+	for i := 0; i < height; i++ {
+		NodeMap[i] = make([]*node, width)
 
 		for j := 0; j < width; j++ {
 			NodeMap[i][j] = new(node)
@@ -49,8 +53,35 @@ func InitalizeNodeMap(width int, height int) {
 	}
 }
 
+func PrintNodeMap() {
+	foregroundColor := blocks.Green
+	backgroundColor := blocks.Blue
+	undefinedColor := blocks.Magenta
+	width := len(NodeMap)
+	height := len(NodeMap[0])
+
+	stateToBlockType := map[byte]byte{
+		Empty:  blocks.Empty,
+		Light:  blocks.Light,
+		Medium: blocks.Medium,
+		Dark:   blocks.Dark,
+		Full:   blocks.Full,
+	}
+
+	for i := 0; i < width; i++ {
+		for j := 0; j < height; j++ {
+			if IsPositionCollapsed(i, j) {
+				blocks.AddBlock(stateToBlockType[GetNodeState(i, j)], foregroundColor, backgroundColor)
+			} else {
+				blocks.AddBlock(blocks.Full, undefinedColor, backgroundColor)
+			}
+		}
+		blocks.PrintBlocks()
+	}
+}
+
 func RemoveStatePossibility(xPos int, yPos int, nodeState byte) {
-	NodeMap[xPos][yPos].possibleStates[indexFromState[nodeState]] = false
+	NodeMap[yPos][xPos].possibleStates[indexFromState[nodeState]] = false
 }
 
 func AssignStateToNode(xPos int, yPos int, nodeState byte) {
@@ -83,4 +114,15 @@ func IsPositionCollapsed(xPos int, yPos int) bool {
 	} else {
 		return false
 	}
+}
+
+func GetNodeState(xPos int, yPos int) byte {
+	for i := 0; i < 5; i++ {
+		if NodeMap[xPos][yPos].possibleStates[i] == true {
+			return stateFromIndex[i]
+		}
+	}
+
+	// Invalid state
+	return 0
 }
