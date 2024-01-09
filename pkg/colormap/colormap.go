@@ -126,3 +126,26 @@ func GetNodeState(xPos int, yPos int) byte {
 	// Invalid state
 	return 0
 }
+
+func GetAdjancentNodePositions(xPos int, yPos int) [][]int {
+	adjacencies := make([][]int, 4)
+
+	// top
+	adjacencies[0] = make([]int, 2)
+	adjacencies[0][0] = xPos
+	adjacencies[0][1] = yPos - 1
+	// bottom
+	adjacencies[0] = make([]int, 2)
+	adjacencies[0][0] = xPos
+	adjacencies[0][1] = yPos + 1
+	// left
+	adjacencies[0] = make([]int, 2)
+	adjacencies[0][0] = xPos - 1
+	adjacencies[0][1] = yPos
+	// right
+	adjacencies[0] = make([]int, 2)
+	adjacencies[0][0] = xPos + 1
+	adjacencies[0][1] = yPos
+
+	return adjacencies
+}
