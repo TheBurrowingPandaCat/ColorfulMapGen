@@ -1,7 +1,6 @@
 package colorblockprint
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -30,7 +29,7 @@ const resetCharacter string = "\033[0m"
 
 func PrintBlocks() {
 	blockStringBuilder.WriteString(resetCharacter)
-	fmt.Println(blockStringBuilder.String())
+	println(blockStringBuilder.String())
 	blockStringBuilder.Reset()
 }
 
