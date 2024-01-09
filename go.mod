@@ -1,3 +1,3 @@
-module github.com/TheBurrowingPanda/ColorfulMapGen
+module github.com/TheBurrowingPandaCat/ColorfulMapGen
 
 go 1.21.5
