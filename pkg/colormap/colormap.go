@@ -19,8 +19,6 @@ var stateIndex = map[int]byte{
 }
 
 type node struct {
-	xPos           int
-	yPos           int
 	possibleStates [5]bool
 }
 
@@ -34,8 +32,6 @@ func InitalizeNodeMap(width int, height int) {
 
 		for j := 0; j < width; j++ {
 			NodeMap[i][j] = new(node)
-			NodeMap[i][j].xPos = i
-			NodeMap[i][j].yPos = j
 
 			for k := 0; k < 5; k++ {
 				NodeMap[i][j].possibleStates[k] = true
