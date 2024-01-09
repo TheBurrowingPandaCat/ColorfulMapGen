@@ -59,6 +59,28 @@ func AssignStateToNode(xPos int, yPos int, nodeState byte) {
 	for i := 0; i < 5; i++ {
 		if i != stateIndex {
 			NodeMap[xPos][yPos].possibleStates[i] = false
+		} else {
+			NodeMap[xPos][yPos].possibleStates[i] = true
 		}
+	}
+}
+
+// Checks if the possibilities for a node have collapsed to a single state
+func IsPositionCollapsed(xPos int, yPos int) bool {
+	possibilityCount := 0
+
+	for i := 0; i < 5; i++ {
+		if NodeMap[xPos][yPos].possibleStates[i] == true {
+			possibilityCount++
+		}
+		if possibilityCount > 1 {
+			break
+		}
+	}
+
+	if possibilityCount == 1 {
+		return true
+	} else {
+		return false
 	}
 }
