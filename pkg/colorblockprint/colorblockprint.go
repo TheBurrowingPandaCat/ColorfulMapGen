@@ -2,6 +2,15 @@ package colorblockprint
 
 import (
 	"fmt"
+	"strings"
+)
+
+const (
+	Full byte = iota + 21
+	Dark
+	Medium
+	Light
+	Empty
 )
 
 const (
@@ -15,23 +24,17 @@ const (
 	White
 )
 
-var blocks map[string]string = map[string]string{
-	"full":   "\u2588",
-	"dark":   "\u2593",
-	"medium": "\u2592",
-	"light":  "\u2591",
-	"empty":  " ",
-}
+var blockStringBuilder strings.Builder = strings.Builder{}
 
-var resetCharacter string = "\033[0m"
+const resetCharacter string = "\033[0m"
 
 func PrintBlocks() {
-	fmt.Println(ColorChangingCharacter(Blue, Magenta) + blocks["full"] + blocks["full"] + blocks["empty"] + blocks["light"] +
-		blocks["medium"] + blocks["dark"] + blocks["full"] + blocks["dark"] + blocks["medium"] +
-		blocks["light"] + blocks["empty"] + blocks["full"] + blocks["full"] + resetCharacter)
+	blockStringBuilder.WriteString(resetCharacter)
+	fmt.Println(blockStringBuilder.String())
+	blockStringBuilder.Reset()
 }
 
-func ColorChangingCharacter(foregroundColor byte, backgroundColor byte) string {
+func AddBlock(shading byte, foregroundColor byte, backgroundColor byte) {
 	foreground := map[byte]string{
 		Black:   "30",
 		Red:     "31",
@@ -54,6 +57,21 @@ func ColorChangingCharacter(foregroundColor byte, backgroundColor byte) string {
 		White:   "47",
 	}
 
-	return "\033[" + foreground[foregroundColor] + ";" +
-		background[backgroundColor] + "m"
+	blocks := map[byte]string{
+		Full:   "\u2588",
+		Dark:   "\u2593",
+		Medium: "\u2592",
+		Light:  "\u2591",
+		Empty:  " ",
+	}
+
+	// Write color information
+	blockStringBuilder.WriteString("\033[")
+	blockStringBuilder.WriteString(foreground[foregroundColor])
+	blockStringBuilder.WriteString(";")
+	blockStringBuilder.WriteString(background[backgroundColor])
+	blockStringBuilder.WriteString("m")
+
+	// Write block
+	blockStringBuilder.WriteString(blocks[shading])
 }
