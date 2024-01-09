@@ -10,12 +10,21 @@ const (
 	Full
 )
 
-var stateIndex = map[int]byte{
+// Store references in a reversible way to speed up lookups
+var stateFromIndex = [5]byte{
 	0: Empty,
 	1: Light,
 	2: Medium,
 	3: Dark,
 	4: Full,
+}
+
+var indexFromState = map[byte]int{
+	Empty:  0,
+	Light:  1,
+	Medium: 2,
+	Dark:   3,
+	Full:   4,
 }
 
 type node struct {
@@ -36,6 +45,20 @@ func InitalizeNodeMap(width int, height int) {
 			for k := 0; k < 5; k++ {
 				NodeMap[i][j].possibleStates[k] = true
 			}
+		}
+	}
+}
+
+func RemoveStatePossibility(xPos int, yPos int, nodeState byte) {
+	NodeMap[xPos][yPos].possibleStates[indexFromState[nodeState]] = false
+}
+
+func AssignStateToNode(xPos int, yPos int, nodeState byte) {
+	stateIndex := indexFromState[nodeState]
+
+	for i := 0; i < 5; i++ {
+		if i != stateIndex {
+			NodeMap[xPos][yPos].possibleStates[i] = false
 		}
 	}
 }
