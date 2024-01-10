@@ -4,7 +4,23 @@ import (
 	"math/rand"
 )
 
-func Propagate() {
+func InitializePropagationStructure(nodeMap [][]*node) []*location {
+	uncollapsedNodes := make([]*location, 0)
+	var currentLocation *location
+
+	for i := 0; i < len(nodeMap); i++ {
+		for j := 0; j < len(nodeMap[0]); j++ {
+			currentLocation = new(location)
+			currentLocation.xPos = i
+			currentLocation.yPos = j
+			uncollapsedNodes = append(uncollapsedNodes, currentLocation)
+		}
+	}
+
+	return uncollapsedNodes
+}
+
+func Propagate(undefinedLocations []*location, definedLocations []*location, locationsToPropagate []*location) {
 	// TODO
 }
 

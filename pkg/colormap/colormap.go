@@ -31,6 +31,11 @@ var indexFromState = map[byte]int{
 	Full:   4,
 }
 
+type location struct {
+	xPos int
+	yPos int
+}
+
 type node struct {
 	possibleStates [5]bool
 }
