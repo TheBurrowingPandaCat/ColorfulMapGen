@@ -1,6 +1,8 @@
 package colormap
 
 import (
+	"math/rand"
+
 	blocks "github.com/TheBurrowingPandaCat/ColorfulMapGen/pkg/colorblockprint"
 )
 
@@ -56,6 +58,27 @@ func InitalizeNodeMap(width int, height int) {
 			}
 		}
 	}
+}
+
+func GenerateNodeMap(rules []*RuleNode, nodeMap [][]*node, undefinedLocations []*location) {
+	// Quit generation if no nodes are undefined
+	if len(undefinedLocations) == 0 {
+		return
+	}
+
+	// Collapse a random node to a random state
+	collapsingLocation := undefinedLocations[rand.Intn(len(undefinedLocations))]
+	DefineNode(nodeMap[collapsingLocation.xPos][collapsingLocation.yPos])
+
+	// Create propagation list
+	locationsToPropagate := make([]*location, 0)
+	locationsToPropagate = append(locationsToPropagate, collapsingLocation)
+
+	// Propagate
+	Propagate(rules, nodeMap, undefinedLocations, locationsToPropagate)
+
+	// Generate more nodes
+	GenerateNodeMap(rules, nodeMap, undefinedLocations)
 }
 
 func PrintNodeMap() {

@@ -53,8 +53,10 @@ func Propagate(rules []*RuleNode, nodeMap [][]*node, undefinedLocations []*locat
 
 		if matchedIndex != -1 {
 			if UpdatePossibilities(rules, nodeMap, currentLocation, undefinedLocations[matchedIndex]) {
-				// Add them to propagation list if they have changed
-				locationsToPropagate = append(locationsToPropagate, undefinedLocations[matchedIndex])
+				// Add them to propagation list if they have changed and aren't already in the list
+				if !slices.Contains(locationsToPropagate, undefinedLocations[matchedIndex]) {
+					locationsToPropagate = append(locationsToPropagate, undefinedLocations[matchedIndex])
+				}
 			}
 		}
 	}
@@ -81,7 +83,4 @@ func DefineNode(nodeToDefine *node) {
 			nodeToDefine.possibleStates[indexFromState[possibilities[i]]] = false
 		}
 	}
-
-	// Propagate
-	// TODO
 }
