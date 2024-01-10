@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"math/rand"
+
 	blocks "github.com/TheBurrowingPandaCat/ColorfulMapGen/pkg/colorblockprint"
 	colormap "github.com/TheBurrowingPandaCat/ColorfulMapGen/pkg/colormap"
 )
@@ -48,4 +51,9 @@ func main() {
 	colormap.AssignStateToNode(18, 7, colormap.Empty)
 	colormap.AssignStateToNode(10, 12, colormap.Medium)
 	colormap.PrintNodeMap()
+
+	fmt.Println(rand.Intn(10))
+	fmt.Println(rand.Intn(10))
+	fmt.Println(rand.Intn(10))
+	fmt.Println(rand.Intn(10))
 }
