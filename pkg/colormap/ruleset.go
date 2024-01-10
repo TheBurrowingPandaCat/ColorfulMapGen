@@ -33,9 +33,37 @@ func InitRuleset() []*RuleNode {
 
 // Remove illegal states given adjacent nodes
 // Returns whether or not space was updated for proper propagation
-func UpdatePossibilities() bool {
-	// TODO
-	return false
+func UpdatePossibilities(rules []*RuleNode, adjacentNodes []*node, currentNode *node) bool {
+	// Track whether or not possibilities were updated to flag for propagation
+	nodeWasUpdated := false
+
+	// Create slices outside of the loop to save on memory and allocation
+	adjacentPossibilities := make([]bool, 5)
+	var legalAdjacencies []byte
+
+	for i := 0; i < len(adjacentNodes); i++ {
+		clear(adjacentPossibilities)
+
+		// Get union of possible states from current adjacent node
+		for j := 0; j < 5; j++ {
+			if adjacentNodes[i].possibleStates[j] != false {
+				legalAdjacencies = GetLegalAdjacencies(rules, stateFromIndex[j])
+				for k := 0; k < len(legalAdjacencies); k++ {
+					adjacentPossibilities[indexFromState[legalAdjacencies[k]]] = true
+				}
+			}
+		}
+
+		// Get intersection of adjacent possibilities and current node's possibilities
+		for j := 0; j < 5; j++ {
+			if !adjacentPossibilities[j] && currentNode.possibleStates[j] {
+				currentNode.possibleStates[j] = false
+				nodeWasUpdated = true
+			}
+		}
+	}
+
+	return nodeWasUpdated
 }
 
 // Get the possible adjacent states given a state
