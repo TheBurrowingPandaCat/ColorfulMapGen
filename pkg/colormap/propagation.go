@@ -21,10 +21,10 @@ func InitializePropagationStructure(nodeMap [][]*node) []*location {
 	return uncollapsedNodes
 }
 
-func Propagate(rules []*RuleNode, nodeMap [][]*node, undefinedLocations []*location, locationsToPropagate []*location) {
+func Propagate(rules []*RuleNode, nodeMap [][]*node, undefinedLocations []*location, locationsToPropagate []*location) ([]*location, []*location) {
 	// Get first item in locationsToPropagate (quit if it's empty)
 	if len(locationsToPropagate) == 0 {
-		return
+		return undefinedLocations, locationsToPropagate
 	}
 
 	currentLocation := locationsToPropagate[0]
@@ -60,7 +60,7 @@ func Propagate(rules []*RuleNode, nodeMap [][]*node, undefinedLocations []*locat
 	}
 
 	// Propagate further
-	Propagate(rules, nodeMap, undefinedLocations, locationsToPropagate)
+	return Propagate(rules, nodeMap, undefinedLocations, locationsToPropagate)
 }
 
 func DefineNode(nodeToDefine *node) {
