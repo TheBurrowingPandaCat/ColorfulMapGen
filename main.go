@@ -43,7 +43,7 @@ func main() {
 	blocks.PrintBlocks()
 
 	println("Testing colormap")
-	colormap.InitalizeNodeMap(20, 40)
+	colormap.InitalizeNodeMap(50, 80)
 	colormap.AssignStateToNode(0, 2, colormap.Full)
 	colormap.AssignStateToNode(18, 7, colormap.Empty)
 	colormap.AssignStateToNode(10, 12, colormap.Medium)
