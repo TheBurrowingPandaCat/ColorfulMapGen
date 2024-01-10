@@ -31,9 +31,9 @@ func InitRuleset() []*RuleNode {
 	return rules
 }
 
-// Remove illegal states given adjacent nodes
-// Returns whether or not space was updated for proper propagation
-func UpdatePossibilities(rules []*RuleNode, adjacentNodes []*node, currentNode *node) bool {
+// Remove illegal states given a mutated adjacent node
+// Returns whether or not possibility space was updated for proper propagation
+func UpdatePossibilities(rules []*RuleNode, mutatedNode *node, currentNode *node) bool {
 	// Track whether or not possibilities were updated to flag for propagation
 	nodeWasUpdated := false
 
@@ -41,25 +41,21 @@ func UpdatePossibilities(rules []*RuleNode, adjacentNodes []*node, currentNode *
 	adjacentPossibilities := make([]bool, 5)
 	var legalAdjacencies []byte
 
-	for i := 0; i < len(adjacentNodes); i++ {
-		clear(adjacentPossibilities)
-
-		// Get union of possible states from current adjacent node
-		for j := 0; j < 5; j++ {
-			if adjacentNodes[i].possibleStates[j] != false {
-				legalAdjacencies = GetLegalAdjacencies(rules, stateFromIndex[j])
-				for k := 0; k < len(legalAdjacencies); k++ {
-					adjacentPossibilities[indexFromState[legalAdjacencies[k]]] = true
-				}
+	// Get union of possible states from mutated node
+	for i := 0; i < 5; i++ {
+		if mutatedNode.possibleStates[i] != false {
+			legalAdjacencies = GetLegalAdjacencies(rules, stateFromIndex[i])
+			for j := 0; j < len(legalAdjacencies); j++ {
+				adjacentPossibilities[indexFromState[legalAdjacencies[j]]] = true
 			}
 		}
+	}
 
-		// Get intersection of adjacent possibilities and current node's possibilities
-		for j := 0; j < 5; j++ {
-			if !adjacentPossibilities[j] && currentNode.possibleStates[j] {
-				currentNode.possibleStates[j] = false
-				nodeWasUpdated = true
-			}
+	// Get intersection of adjacent possibilities and current node's possibilities
+	for i := 0; i < 5; i++ {
+		if !adjacentPossibilities[i] && currentNode.possibleStates[i] {
+			currentNode.possibleStates[i] = false
+			nodeWasUpdated = true
 		}
 	}
 
