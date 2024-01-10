@@ -39,7 +39,12 @@ func UpdatePossibilities() bool {
 }
 
 // Get the possible adjacent states given a state
-func GetLegalAdjacencies() []byte {
-	// TODO
-	return nil
+func GetLegalAdjacencies(rules []*RuleNode, state byte) []byte {
+	legalStates := make([]byte, 0, 2)
+
+	for i := 0; i < len(rules[indexFromState[state]].edges); i++ {
+		legalStates = append(legalStates, rules[indexFromState[state]].edges[i].state)
+	}
+
+	return legalStates
 }
