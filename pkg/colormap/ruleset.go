@@ -7,8 +7,28 @@ type RuleNode struct {
 }
 
 // Initialize hardcoded ruleset
-func InitRuleset() {
-	// TODO
+func InitRuleset() []*RuleNode {
+	rules := make([]*RuleNode, 5)
+
+	// Using indexFromState ensures the ruleset is easily accessible
+	// in the same way as the possible states in a node
+
+	rules[indexFromState[Empty]] = new(RuleNode)
+	rules[indexFromState[Empty]].edges = append(rules[indexFromState[Empty]].edges, rules[indexFromState[Light]])
+
+	rules[indexFromState[Light]] = new(RuleNode)
+	rules[indexFromState[Light]].edges = append(rules[indexFromState[Light]].edges, rules[indexFromState[Empty]], rules[indexFromState[Medium]])
+
+	rules[indexFromState[Medium]] = new(RuleNode)
+	rules[indexFromState[Medium]].edges = append(rules[indexFromState[Medium]].edges, rules[indexFromState[Light]], rules[indexFromState[Dark]])
+
+	rules[indexFromState[Dark]] = new(RuleNode)
+	rules[indexFromState[Dark]].edges = append(rules[indexFromState[Dark]].edges, rules[indexFromState[Medium]], rules[indexFromState[Full]])
+
+	rules[indexFromState[Full]] = new(RuleNode)
+	rules[indexFromState[Full]].edges = append(rules[indexFromState[Full]].edges, rules[indexFromState[Dark]])
+
+	return rules
 }
 
 // Remove illegal states given adjacent nodes
