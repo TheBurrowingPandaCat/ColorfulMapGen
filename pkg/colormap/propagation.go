@@ -2,6 +2,7 @@ package colormap
 
 import (
 	"math/rand"
+	"slices"
 )
 
 func InitializePropagationStructure(nodeMap [][]*node) []*location {
@@ -20,8 +21,46 @@ func InitializePropagationStructure(nodeMap [][]*node) []*location {
 	return uncollapsedNodes
 }
 
-func Propagate(undefinedLocations []*location, definedLocations []*location, locationsToPropagate []*location) {
-	// TODO
+func Propagate(rules []*RuleNode, nodeMap [][]*node, undefinedLocations []*location, locationsToPropagate []*location) {
+	// Get first item in locationsToPropagate (quit if it's empty)
+	if len(locationsToPropagate) == 0 {
+		return
+	}
+
+	currentLocation := locationsToPropagate[0]
+
+	// Remove location from propagation list
+	locationsToPropagate = slices.Delete(locationsToPropagate, 0, 1)
+
+	// Remove from undefined list if the location has been defined
+	if IsPositionCollapsed(currentLocation.xPos, currentLocation.yPos) {
+		undefinedLocations = slices.Delete(undefinedLocations, slices.Index(undefinedLocations, currentLocation), 1)
+	}
+
+	// Update all locations around current location unless they are invalid in some way
+	adjancentPositions := GetAdjacentNodePositions(currentLocation.xPos, currentLocation.yPos)
+
+	for i := 0; i < len(adjancentPositions); i++ {
+		// Skip coordinates if they are out of bounds
+		if adjancentPositions[i][0] == -1 || adjancentPositions[i][0] == len(nodeMap) || adjancentPositions[i][1] == -1 || adjancentPositions[i][1] == len(nodeMap[0]) {
+			continue
+		}
+
+		// Find the location that matches these coordinates in the undefined list
+		matchedIndex := slices.IndexFunc(undefinedLocations, func(loc *location) bool {
+			return loc.xPos == adjancentPositions[i][0] && loc.yPos == adjancentPositions[i][1]
+		})
+
+		if matchedIndex != -1 {
+			if UpdatePossibilities(rules, nodeMap, currentLocation, undefinedLocations[matchedIndex]) {
+				// Add them to propagation list if they have changed
+				locationsToPropagate = append(locationsToPropagate, undefinedLocations[matchedIndex])
+			}
+		}
+	}
+
+	// Propagate further
+	Propagate(rules, nodeMap, undefinedLocations, locationsToPropagate)
 }
 
 func DefineNode(nodeToDefine *node) {

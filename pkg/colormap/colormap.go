@@ -132,7 +132,7 @@ func GetNodeState(xPos int, yPos int) byte {
 	return 0
 }
 
-func GetAdjancentNodePositions(xPos int, yPos int) [][]int {
+func GetAdjacentNodePositions(xPos int, yPos int) [][]int {
 	adjacencies := make([][]int, 4)
 
 	// top
@@ -140,17 +140,17 @@ func GetAdjancentNodePositions(xPos int, yPos int) [][]int {
 	adjacencies[0][0] = xPos
 	adjacencies[0][1] = yPos - 1
 	// bottom
-	adjacencies[0] = make([]int, 2)
-	adjacencies[0][0] = xPos
-	adjacencies[0][1] = yPos + 1
+	adjacencies[1] = make([]int, 2)
+	adjacencies[1][0] = xPos
+	adjacencies[1][1] = yPos + 1
 	// left
-	adjacencies[0] = make([]int, 2)
-	adjacencies[0][0] = xPos - 1
-	adjacencies[0][1] = yPos
+	adjacencies[2] = make([]int, 2)
+	adjacencies[2][0] = xPos - 1
+	adjacencies[2][1] = yPos
 	// right
-	adjacencies[0] = make([]int, 2)
-	adjacencies[0][0] = xPos + 1
-	adjacencies[0][1] = yPos
+	adjacencies[3] = make([]int, 2)
+	adjacencies[3][0] = xPos + 1
+	adjacencies[3][1] = yPos
 
 	return adjacencies
 }

@@ -33,7 +33,16 @@ func InitRuleset() []*RuleNode {
 
 // Remove illegal states given a mutated adjacent node
 // Returns whether or not possibility space was updated for proper propagation
-func UpdatePossibilities(rules []*RuleNode, mutatedNode *node, currentNode *node) bool {
+func UpdatePossibilities(rules []*RuleNode, nodeMap [][]*node, mutatedLocation *location, currentLocation *location) bool {
+	// Immediately quit if current node is already defined
+	if IsPositionCollapsed(currentLocation.xPos, currentLocation.yPos) {
+		return false
+	}
+
+	// Get nodes
+	mutatedNode := nodeMap[mutatedLocation.xPos][mutatedLocation.yPos]
+	currentNode := nodeMap[currentLocation.xPos][currentLocation.yPos]
+
 	// Track whether or not possibilities were updated to flag for propagation
 	nodeWasUpdated := false
 
