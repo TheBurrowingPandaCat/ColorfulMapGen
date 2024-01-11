@@ -23,17 +23,19 @@ const (
 	White
 )
 
-var blockStringBuilder strings.Builder = strings.Builder{}
-
 const resetCharacter string = "\033[0m"
 
-func PrintBlocks() {
-	blockStringBuilder.WriteString(resetCharacter)
-	println(blockStringBuilder.String())
-	blockStringBuilder.Reset()
+func InitializeBlockString() *strings.Builder {
+	return new(strings.Builder)
 }
 
-func AddBlock(shading byte, foregroundColor byte, backgroundColor byte) {
+func PrintBlocks(blockString *strings.Builder) {
+	blockString.WriteString(resetCharacter)
+	println(blockString.String())
+	blockString.Reset()
+}
+
+func AddBlock(blockString *strings.Builder, shading byte, foregroundColor byte, backgroundColor byte) {
 	foreground := map[byte]string{
 		Black:   "30",
 		Red:     "31",
@@ -65,12 +67,12 @@ func AddBlock(shading byte, foregroundColor byte, backgroundColor byte) {
 	}
 
 	// Write color information
-	blockStringBuilder.WriteString("\033[")
-	blockStringBuilder.WriteString(foreground[foregroundColor])
-	blockStringBuilder.WriteString(";")
-	blockStringBuilder.WriteString(background[backgroundColor])
-	blockStringBuilder.WriteString("m")
+	blockString.WriteString("\033[")
+	blockString.WriteString(foreground[foregroundColor])
+	blockString.WriteString(";")
+	blockString.WriteString(background[backgroundColor])
+	blockString.WriteString("m")
 
 	// Write block
-	blockStringBuilder.WriteString(blocks[shading])
+	blockString.WriteString(blocks[shading])
 }

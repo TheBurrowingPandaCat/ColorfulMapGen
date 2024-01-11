@@ -2,6 +2,7 @@ package colormap
 
 import (
 	"math/rand"
+	"strings"
 
 	blocks "github.com/TheBurrowingPandaCat/ColorfulMapGen/pkg/colorblockprint"
 )
@@ -81,7 +82,7 @@ func GenerateNodeMap(rules []*RuleNode, nodeMap [][]*node, undefinedLocations []
 	GenerateNodeMap(rules, nodeMap, undefinedLocations)
 }
 
-func PrintNodeMap(NodeMap [][]*node) {
+func PrintNodeMap(NodeMap [][]*node, blockString *strings.Builder) {
 	foregroundColor := blocks.Green
 	backgroundColor := blocks.Blue
 	undefinedColor := blocks.Magenta
@@ -99,12 +100,12 @@ func PrintNodeMap(NodeMap [][]*node) {
 	for i := 0; i < width; i++ {
 		for j := 0; j < height; j++ {
 			if IsPositionCollapsed(i, j, NodeMap) {
-				blocks.AddBlock(stateToBlockType[GetNodeState(i, j, NodeMap)], foregroundColor, backgroundColor)
+				blocks.AddBlock(blockString, stateToBlockType[GetNodeState(i, j, NodeMap)], foregroundColor, backgroundColor)
 			} else {
-				blocks.AddBlock(blocks.Full, undefinedColor, backgroundColor)
+				blocks.AddBlock(blockString, blocks.Full, undefinedColor, backgroundColor)
 			}
 		}
-		blocks.PrintBlocks()
+		blocks.PrintBlocks(blockString)
 	}
 }
 
