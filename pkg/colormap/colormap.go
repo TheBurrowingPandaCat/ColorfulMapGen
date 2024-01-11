@@ -1,6 +1,8 @@
 package colormap
 
 import (
+	"math/rand"
+
 	blocks "github.com/TheBurrowingPandaCat/ColorfulMapGen/pkg/colorblockprint"
 )
 
@@ -31,14 +33,17 @@ var indexFromState = map[byte]int{
 	Full:   4,
 }
 
+type location struct {
+	xPos int
+	yPos int
+}
+
 type node struct {
 	possibleStates [5]bool
 }
 
-var NodeMap [][]*node
-
-func InitalizeNodeMap(width int, height int) {
-	NodeMap = make([][]*node, width)
+func InitializeNodeMap(width int, height int) [][]*node {
+	NodeMap := make([][]*node, width)
 
 	for i := 0; i < width; i++ {
 		NodeMap[i] = make([]*node, height)
@@ -51,9 +56,32 @@ func InitalizeNodeMap(width int, height int) {
 			}
 		}
 	}
+
+	return NodeMap
 }
 
-func PrintNodeMap() {
+func GenerateNodeMap(rules []*RuleNode, nodeMap [][]*node, undefinedLocations []*location) {
+	// Quit generation if no nodes are undefined
+	if len(undefinedLocations) == 0 {
+		return
+	}
+
+	// Collapse a random node to a random state
+	collapsingLocation := undefinedLocations[rand.Intn(len(undefinedLocations))]
+	DefineNode(nodeMap[collapsingLocation.xPos][collapsingLocation.yPos])
+
+	// Create propagation list
+	locationsToPropagate := make([]*location, 0)
+	locationsToPropagate = append(locationsToPropagate, collapsingLocation)
+
+	// Propagate
+	undefinedLocations, locationsToPropagate = Propagate(rules, nodeMap, undefinedLocations, locationsToPropagate)
+
+	// Generate more nodes
+	GenerateNodeMap(rules, nodeMap, undefinedLocations)
+}
+
+func PrintNodeMap(NodeMap [][]*node) {
 	foregroundColor := blocks.Green
 	backgroundColor := blocks.Blue
 	undefinedColor := blocks.Magenta
@@ -70,8 +98,8 @@ func PrintNodeMap() {
 
 	for i := 0; i < width; i++ {
 		for j := 0; j < height; j++ {
-			if IsPositionCollapsed(i, j) {
-				blocks.AddBlock(stateToBlockType[GetNodeState(i, j)], foregroundColor, backgroundColor)
+			if IsPositionCollapsed(i, j, NodeMap) {
+				blocks.AddBlock(stateToBlockType[GetNodeState(i, j, NodeMap)], foregroundColor, backgroundColor)
 			} else {
 				blocks.AddBlock(blocks.Full, undefinedColor, backgroundColor)
 			}
@@ -80,11 +108,11 @@ func PrintNodeMap() {
 	}
 }
 
-func RemoveStatePossibility(xPos int, yPos int, nodeState byte) {
+func RemoveStatePossibility(xPos int, yPos int, nodeState byte, NodeMap [][]*node) {
 	NodeMap[yPos][xPos].possibleStates[indexFromState[nodeState]] = false
 }
 
-func AssignStateToNode(xPos int, yPos int, nodeState byte) {
+func AssignStateToNode(xPos int, yPos int, nodeState byte, NodeMap [][]*node) {
 	stateIndex := indexFromState[nodeState]
 
 	for i := 0; i < 5; i++ {
@@ -97,7 +125,7 @@ func AssignStateToNode(xPos int, yPos int, nodeState byte) {
 }
 
 // Checks if the possibilities for a node have collapsed to a single state
-func IsPositionCollapsed(xPos int, yPos int) bool {
+func IsPositionCollapsed(xPos int, yPos int, NodeMap [][]*node) bool {
 	possibilityCount := 0
 
 	for i := 0; i < 5; i++ {
@@ -116,7 +144,7 @@ func IsPositionCollapsed(xPos int, yPos int) bool {
 	}
 }
 
-func GetNodeState(xPos int, yPos int) byte {
+func GetNodeState(xPos int, yPos int, NodeMap [][]*node) byte {
 	for i := 0; i < 5; i++ {
 		if NodeMap[xPos][yPos].possibleStates[i] == true {
 			return stateFromIndex[i]
@@ -127,7 +155,7 @@ func GetNodeState(xPos int, yPos int) byte {
 	return 0
 }
 
-func GetAdjancentNodePositions(xPos int, yPos int) [][]int {
+func GetAdjacentNodePositions(xPos int, yPos int) [][]int {
 	adjacencies := make([][]int, 4)
 
 	// top
@@ -135,17 +163,17 @@ func GetAdjancentNodePositions(xPos int, yPos int) [][]int {
 	adjacencies[0][0] = xPos
 	adjacencies[0][1] = yPos - 1
 	// bottom
-	adjacencies[0] = make([]int, 2)
-	adjacencies[0][0] = xPos
-	adjacencies[0][1] = yPos + 1
+	adjacencies[1] = make([]int, 2)
+	adjacencies[1][0] = xPos
+	adjacencies[1][1] = yPos + 1
 	// left
-	adjacencies[0] = make([]int, 2)
-	adjacencies[0][0] = xPos - 1
-	adjacencies[0][1] = yPos
+	adjacencies[2] = make([]int, 2)
+	adjacencies[2][0] = xPos - 1
+	adjacencies[2][1] = yPos
 	// right
-	adjacencies[0] = make([]int, 2)
-	adjacencies[0][0] = xPos + 1
-	adjacencies[0][1] = yPos
+	adjacencies[3] = make([]int, 2)
+	adjacencies[3][0] = xPos + 1
+	adjacencies[3][1] = yPos
 
 	return adjacencies
 }
