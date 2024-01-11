@@ -33,8 +33,8 @@ func Propagate(rules []*RuleNode, nodeMap [][]*node, undefinedLocations []*locat
 	locationsToPropagate = slices.Delete(locationsToPropagate, 0, 1)
 
 	// Remove from undefined list if the location has been defined
-	if IsPositionCollapsed(currentLocation.xPos, currentLocation.yPos) {
-		undefinedLocations = slices.Delete(undefinedLocations, slices.Index(undefinedLocations, currentLocation), 1)
+	if IsPositionCollapsed(currentLocation.xPos, currentLocation.yPos, nodeMap) {
+		undefinedLocations = slices.Delete(undefinedLocations, slices.Index(undefinedLocations, currentLocation), slices.Index(undefinedLocations, currentLocation)+1)
 	}
 
 	// Update all locations around current location unless they are invalid in some way
@@ -76,7 +76,6 @@ func DefineNode(nodeToDefine *node) {
 
 	// Choose between them randomly
 	chosenState := possibilities[rand.Intn(len(possibilities))]
-
 	// Assign the chosen state
 	for i := 0; i < len(possibilities); i++ {
 		if chosenState != possibilities[i] {

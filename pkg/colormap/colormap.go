@@ -42,10 +42,8 @@ type node struct {
 	possibleStates [5]bool
 }
 
-var NodeMap [][]*node
-
-func InitalizeNodeMap(width int, height int) {
-	NodeMap = make([][]*node, width)
+func InitializeNodeMap(width int, height int) [][]*node {
+	NodeMap := make([][]*node, width)
 
 	for i := 0; i < width; i++ {
 		NodeMap[i] = make([]*node, height)
@@ -58,6 +56,8 @@ func InitalizeNodeMap(width int, height int) {
 			}
 		}
 	}
+
+	return NodeMap
 }
 
 func GenerateNodeMap(rules []*RuleNode, nodeMap [][]*node, undefinedLocations []*location) {
@@ -75,13 +75,13 @@ func GenerateNodeMap(rules []*RuleNode, nodeMap [][]*node, undefinedLocations []
 	locationsToPropagate = append(locationsToPropagate, collapsingLocation)
 
 	// Propagate
-	Propagate(rules, nodeMap, undefinedLocations, locationsToPropagate)
+	undefinedLocations, locationsToPropagate = Propagate(rules, nodeMap, undefinedLocations, locationsToPropagate)
 
 	// Generate more nodes
 	GenerateNodeMap(rules, nodeMap, undefinedLocations)
 }
 
-func PrintNodeMap() {
+func PrintNodeMap(NodeMap [][]*node) {
 	foregroundColor := blocks.Green
 	backgroundColor := blocks.Blue
 	undefinedColor := blocks.Magenta
@@ -98,8 +98,8 @@ func PrintNodeMap() {
 
 	for i := 0; i < width; i++ {
 		for j := 0; j < height; j++ {
-			if IsPositionCollapsed(i, j) {
-				blocks.AddBlock(stateToBlockType[GetNodeState(i, j)], foregroundColor, backgroundColor)
+			if IsPositionCollapsed(i, j, NodeMap) {
+				blocks.AddBlock(stateToBlockType[GetNodeState(i, j, NodeMap)], foregroundColor, backgroundColor)
 			} else {
 				blocks.AddBlock(blocks.Full, undefinedColor, backgroundColor)
 			}
@@ -108,11 +108,11 @@ func PrintNodeMap() {
 	}
 }
 
-func RemoveStatePossibility(xPos int, yPos int, nodeState byte) {
+func RemoveStatePossibility(xPos int, yPos int, nodeState byte, NodeMap [][]*node) {
 	NodeMap[yPos][xPos].possibleStates[indexFromState[nodeState]] = false
 }
 
-func AssignStateToNode(xPos int, yPos int, nodeState byte) {
+func AssignStateToNode(xPos int, yPos int, nodeState byte, NodeMap [][]*node) {
 	stateIndex := indexFromState[nodeState]
 
 	for i := 0; i < 5; i++ {
@@ -125,7 +125,7 @@ func AssignStateToNode(xPos int, yPos int, nodeState byte) {
 }
 
 // Checks if the possibilities for a node have collapsed to a single state
-func IsPositionCollapsed(xPos int, yPos int) bool {
+func IsPositionCollapsed(xPos int, yPos int, NodeMap [][]*node) bool {
 	possibilityCount := 0
 
 	for i := 0; i < 5; i++ {
@@ -144,7 +144,7 @@ func IsPositionCollapsed(xPos int, yPos int) bool {
 	}
 }
 
-func GetNodeState(xPos int, yPos int) byte {
+func GetNodeState(xPos int, yPos int, NodeMap [][]*node) byte {
 	for i := 0; i < 5; i++ {
 		if NodeMap[xPos][yPos].possibleStates[i] == true {
 			return stateFromIndex[i]
